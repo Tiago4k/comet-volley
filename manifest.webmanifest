@@ -1,0 +1,16 @@
+{
+  "name": "Comet Volley",
+  "short_name": "Comet Volley",
+  "description": "Fling volleys of comets at a crystal belt that grows stronger every round.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070616",
+  "theme_color": "#070616",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
