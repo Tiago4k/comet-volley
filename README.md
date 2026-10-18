@@ -27,9 +27,16 @@ A tile-placing puzzle set on the walls of Lisbon: drag painted tile shapes onto 
 
 **Play:** https://tiago4k.github.io/comet-volley/azulejo/ (install it to the home screen the same way)
 
+## Also here: Boardwalk Blitz
+
+A seaside endless runner: change lanes, jump logs and pier gaps, slide under kites, and grab shells for a dash.
+
+**Play:** https://tiago4k.github.io/comet-volley/boardwalk/
+
 ## Files
 
 - `index.html` – the whole game (canvas, physics, sound, menus)
 - `sw.js` – service worker that caches everything for offline play
 - `manifest.webmanifest`, icons – home-screen app setup
 - `azulejo/` – Azulejo Atelier, with its own offline cache and icon
+- `boardwalk/` – Boardwalk Blitz, with its own offline cache and icon
