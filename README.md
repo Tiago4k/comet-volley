@@ -21,8 +21,15 @@ After that it launches from the icon with no connection, and runs save between l
 - A mothership arrives every 10 rounds, along with a new sector of sky.
 - Second wind clears the bottom three rows, once per run.
 
+## Also here: Azulejo Atelier
+
+A tile-placing puzzle set on the walls of Lisbon: drag painted tile shapes onto a 9×9 wall, clear rows, columns and 3×3 squares, and work through Lisbon's neighbourhoods.
+
+**Play:** https://tiago4k.github.io/comet-volley/azulejo/ (install it to the home screen the same way)
+
 ## Files
 
 - `index.html` – the whole game (canvas, physics, sound, menus)
 - `sw.js` – service worker that caches everything for offline play
 - `manifest.webmanifest`, icons – home-screen app setup
+- `azulejo/` – Azulejo Atelier, with its own offline cache and icon
