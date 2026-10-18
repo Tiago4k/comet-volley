@@ -390,8 +390,8 @@ const Snd=(()=>{
   const PENTA=[0,2,4,7,9];
   const ok=()=>ac&&!muted&&!quiet&&ac.state==='running';
   function init(){
+    session();
     if(ac){if(ac.state!=='running')ac.resume().catch(()=>{});return;}
-    try{if(navigator.audioSession)navigator.audioSession.type='ambient';}catch(e){}
     try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}
     out=ac.createGain();out.gain.value=.85;
     const comp=ac.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=5;comp.attack.value=.003;comp.release.value=.2;
@@ -402,6 +402,17 @@ const Snd=(()=>{
     nb=ac.createBuffer(1,ac.sampleRate,ac.sampleRate);const ch=nb.getChannelData(0);for(let i=0;i<ch.length;i++)ch[i]=Math.random()*2-1;
     const sb=ac.createBuffer(1,1,22050),ss=ac.createBufferSource();ss.buffer=sb;ss.connect(ac.destination);ss.start(0);
     if(ac.state!=='running')ac.resume().catch(()=>{});
+  }
+  // Media-playback session so sound ignores the ring/silent switch (pauses other audio while on).
+  let unlockEl=null;
+  function session(){
+    const want=muted?'ambient':'playback';
+    try{if(navigator.audioSession){navigator.audioSession.type=want;return;}}catch(e){}
+    // Older iOS: a silent looping media element puts the page in playback mode.
+    try{
+      if(!unlockEl){unlockEl=new Audio('data:audio/wav;base64,UklGRvQHAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YdAHAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==');unlockEl.loop=true;unlockEl.setAttribute('playsinline','');unlockEl.volume=0.01;}
+      if(muted)unlockEl.pause();else{const p=unlockEl.play();if(p&&p.catch)p.catch(()=>{});}
+    }catch(e){}
   }
   function env(g,t,a,peak,dur){g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(.0001,t+dur);}
   function osc(type,f,t,dur,peak,o={}){
@@ -421,7 +432,7 @@ const Snd=(()=>{
   const note=i=>{const o=Math.floor(i/5),s=PENTA[((i%5)+5)%5];return 329.63*Math.pow(2,(o*12+s)/12);};
   const gate=(k,ms)=>{const n=performance.now();if(lastT[k]&&n-lastT[k]<ms)return false;lastT[k]=n;return true;};
   return{
-    init,get muted(){return muted;},setMuted(m){muted=m;store.set('muted',m);},
+    init,get muted(){return muted;},setMuted(m){muted=m;store.set('muted',m);session();if(!m&&ac&&ac.state!=='running')ac.resume().catch(()=>{});},
     hit(i){if(!ok()||!gate('hit',34))return;const t=ac.currentTime,f=note(i%15);osc('triangle',f,t,.17,.065,{wet:.45});osc('sine',f*2,t,.08,.02);},
     shatter(i){if(!ok()||!gate('sh',50))return;const t=ac.currentTime,f=note((i%10)+5);osc('sine',f,t,.8,.085,{wet:.9});osc('sine',f*2.006,t,.5,.035,{wet:.9});osc('sine',f*3.01,t,.25,.018);noise(t,.16,.05,{f:5200,q:.5,type:'highpass'});},
     launch(){if(!ok())return;const t=ac.currentTime;noise(t,.38,.07,{f:380,to:2600,q:1.4,a:.05,wet:.3});osc('sine',220,t,.25,.04,{to:440,a:.02});},
@@ -1094,7 +1105,7 @@ if(window.claude?.hot?.ready)window.claude.hot.ready(start);else start(window.cl
   var tag=document.getElementById('offlineTag');
   function check(){
     if(!window.caches)return;
-    caches.open('comet-volley-v1').then(function(c){return c.match('index.html');}).then(function(r){if(r&&tag)tag.hidden=false;}).catch(function(){});
+    caches.match('index.html').then(function(r){if(r&&tag)tag.hidden=false;}).catch(function(){});
   }
   window.addEventListener('load',function(){
     navigator.serviceWorker.register('sw.js').then(function(){return navigator.serviceWorker.ready;}).then(check).catch(function(){});
